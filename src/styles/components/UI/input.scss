@@ -1,0 +1,23 @@
+.input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background-color: $color-white;
+
+  &::placeholder {
+    font-size: 14px;
+    font-weight: 700;
+    color: $placeholder-gray;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.label {
+  font-size: 11px;
+  line-height: 1.17;
+  color: $color-white;
+}
