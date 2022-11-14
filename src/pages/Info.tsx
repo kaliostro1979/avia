@@ -1,32 +1,33 @@
-import {FC, useEffect, useState} from 'react';
+import {FC, useEffect} from 'react';
 import {useAppSelector} from "../hooks/ReduxHooks";
-import Logo from "../assets/images/logo.png"
-import BagIcon from "../icons/BagIcon";
-import SuitCaseIcon from "../icons/SuitCaseIcon";
 import {useNavigate} from "react-router-dom";
+import InfoCartBody from "../components/InfoCartBody";
+
+export interface ITimes {
+    departureTime: string
+    arrivalTime: string
+}
+
+
+export interface ITicket {
+    start: string
+    end: string
+    startDate: string
+    endDate: string,
+    departure_airport: string
+    arrival_airport: string
+    duration: string
+    ticket_status: string
+    airline: string
+    price: number
+    availableTimes: ITimes[],
+    twoWaysTicket: boolean
+}
+
 
 const Info: FC = () => {
-    interface ITimes {
-        departureTime: string
-        arrivalTime: string
-    }
-
-    interface ITicket {
-        start: string
-        end: string
-        startDate: string
-        endDate: string,
-        departure_airport: string
-        arrival_airport: string
-        duration: string
-        ticket_status: string
-        airline: string
-        price: number
-        availableTimes: ITimes[]
-    }
-
-
     const values = useAppSelector(state => state.search.values)
+
     const ticket: ITicket = {
         start: values.start,
         end: values.end,
@@ -51,17 +52,12 @@ const Info: FC = () => {
                 departureTime: "11:20",
                 arrivalTime: "13:05"
             }
-        ]
+        ],
+        twoWaysTicket: false
     }
 
-    const [times, setTimes] = useState<ITimes>(ticket.availableTimes[0])
-    const [activeIndex, setActiveIndex] = useState(0)
     const navigate = useNavigate()
 
-    const handleClick = (updatedData: ITimes, index: number) => {
-        setTimes(updatedData)
-        setActiveIndex(index)
-    }
 
     useEffect(()=>{
         if (!ticket.start || !ticket.end || !ticket.startDate){
@@ -73,102 +69,8 @@ const Info: FC = () => {
         <div className={"page-wrapper"}>
             <div className={"info-cart__wrapper"}>
                 <div className={"info-cart__item"}>
-                    <div className={"info-cart__body"}>
-                        <div className={"info-cart__label"}>
-                            <span>{ticket.ticket_status}</span>
-                        </div>
-                        <div className={"info-cart__logo"}>
-                            <img src={Logo} alt=""/>
-                            <p>{ticket.airline}</p>
-                        </div>
-                        <div className={"info-cart__details"}>
-                            <div className={"info-cart__path"}>
-                                <div className={"info-cart__path-start"}>
-                                    <p className={"info-cart__path-time-item info-cart__path-start-time"}>{times.departureTime}</p>
-                                    <p className={"info-cart__path-start-point"}>{ticket.start}</p>
-                                    <p className={"info-cart__path-start-date"}>{ticket.startDate}</p>
-                                </div>
-                                <div className={"info-cart__path-duration-wrapper"}>
-                                    <ul className={"info-cart__path-duration"}>
-                                        <li>{ticket.departure_airport}</li>
-                                        <li>{ticket.arrival_airport}</li>
-                                    </ul>
-                                    <p>В пути {ticket.duration}</p>
-                                </div>
-                                <div className={"info-cart__path-end"}>
-                                    <p className={"info-cart__path-time-item info-cart__path-end-time"}>{times.arrivalTime}</p>
-                                    <p className={"info-cart__path-start-point"}>{ticket.end}</p>
-                                    <p className={"info-cart__path-start-date"}>{ticket.startDate}</p>
-                                </div>
-                                <div className={"info-cart__path-icons"}>
-                                    <BagIcon/>
-                                    <SuitCaseIcon/>
-                                </div>
-                            </div>
-                            {
-                                ticket.endDate === "" ? <ul className={"info-cart__time-list"}>
-                                    {
-                                        ticket.availableTimes.map((item, index) => {
-                                            return (
-                                                <li
-                                                    key={Date.now() * index}
-                                                    onClick={() => handleClick({
-                                                        departureTime: item.departureTime,
-                                                        arrivalTime: item.arrivalTime
-                                                    }, index)}
-                                                    className={index === activeIndex ? "info-cart__time-list-item active" : "info-cart__time-list-item"}
-                                                >
-                                                    <p>
-                                                    <span className={"info-cart__time-dep"}>{item.departureTime}
-                                                    </span> -
-                                                        <span
-                                                            className={"info-cart__time-arr"}>{item.arrivalTime}</span>
-                                                    </p>
-                                                </li>
-                                            )
-                                        })
-                                    }
-                                </ul> : null
-                            }
-                        </div>
-                    </div>
-                    {
-                        values.endDate !== "" ?
-                            <div className={"info-cart__body"}>
-                                <div className={"info-cart__label"}>
-                                    <span>{ticket.ticket_status}</span>
-                                </div>
-                                <div className={"info-cart__logo"}>
-                                    <img src={Logo} alt=""/>
-                                    <p>{ticket.airline}</p>
-                                </div>
-                                <div className={"info-cart__details"}>
-                                    <div className={"info-cart__path"}>
-                                        <div className={"info-cart__path-end"}>
-                                            <p className={"info-cart__path-time-item info-cart__path-end-time"}>{times.arrivalTime}</p>
-                                            <p className={"info-cart__path-start-point"}>{ticket.end}</p>
-                                            <p className={"info-cart__path-start-date"}>{ticket.endDate}</p>
-                                        </div>
-                                        <div className={"info-cart__path-duration-wrapper"}>
-                                            <ul className={"info-cart__path-duration"}>
-                                                <li>{ticket.arrival_airport}</li>
-                                                <li>{ticket.departure_airport}</li>
-                                            </ul>
-                                            <p>В пути {ticket.duration}</p>
-                                        </div>
-                                        <div className={"info-cart__path-start"}>
-                                            <p className={"info-cart__path-time-item info-cart__path-start-time"}>{times.departureTime}</p>
-                                            <p className={"info-cart__path-start-point"}>{ticket.start}</p>
-                                            <p className={"info-cart__path-start-date"}>{ticket.endDate}</p>
-                                        </div>
-                                        <div className={"info-cart__path-icons"}>
-                                            <BagIcon/>
-                                            <SuitCaseIcon/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> : null
-                    }
+                    <InfoCartBody {...ticket}/>
+                    {ticket.endDate ? <InfoCartBody {...{...ticket, twoWaysTicket: true}}/> : null}
                 </div>
                 <div className={"info-cart__price"}>
                     <p>{ticket.endDate !== "" ? ticket.price * 2 : ticket.price} ₽</p>
